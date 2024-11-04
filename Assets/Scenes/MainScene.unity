@@ -536,7 +536,7 @@ GameObject:
   - component: {fileID: 1185449545}
   - component: {fileID: 1185449544}
   m_Layer: 0
-  m_Name: Cylinder (1)
+  m_Name: ObjectSnap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -655,7 +655,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1441032345}
   m_Layer: 0
-  m_Name: Grid
+  m_Name: GridParent
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -690,7 +690,7 @@ GameObject:
   - component: {fileID: 1748544819}
   - component: {fileID: 1748544823}
   m_Layer: 0
-  m_Name: Cylinder
+  m_Name: ObjectSnap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
