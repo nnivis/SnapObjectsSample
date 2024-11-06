@@ -41,7 +41,7 @@ namespace CodeBase.Services.ObjectSnap
                 SnapToNearestCell();
             }
         }
-
+    
         private void SnapToNearestCell()
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
