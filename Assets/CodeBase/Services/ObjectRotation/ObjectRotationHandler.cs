@@ -5,17 +5,41 @@ namespace CodeBase.Services.ObjectRotation
     public class ObjectRotationHandler : MonoBehaviour
     {
         [SerializeField] private ObjectRotationPanel _objectRotationPanel;
-        [SerializeField] private ObjectRotation _objectRotation;
         private ObjectRotation _activeObject;
 
         public void Initialize()
         {
             _objectRotationPanel.OnClickedLeftButton += ApplyLeftRotation;
             _objectRotationPanel.OnClickedRightButton += ApplyRightRotation;
-            
-            _activeObject = _objectRotation;
         }
-        private void ApplyRightRotation() => _activeObject.ApplyRotateRight();
-        private void ApplyLeftRotation() => _activeObject.ApplyRotateLeft();
+
+        private void Update()
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                if (Physics.Raycast(ray, out RaycastHit hit))
+                {
+                    ObjectRotation clickedObject = hit.collider.GetComponent<ObjectRotation>();
+                    
+                    if (clickedObject != null || _activeObject == null)
+                    {
+                        _activeObject = clickedObject;
+                    }
+                }
+            }
+        }
+        
+        private void ApplyRightRotation()
+        {
+            if (_activeObject != null)
+                _activeObject.ApplyRotateRight();
+        }
+
+        private void ApplyLeftRotation()
+        {
+            if (_activeObject != null)
+                _activeObject.ApplyRotateLeft();
+        }
     }
 }

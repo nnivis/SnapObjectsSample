@@ -58,6 +58,7 @@ namespace CodeBase.Grid
             float cellHeight = cell.visualRepresentation.GetComponent<Renderer>().bounds.size.y;
             float objectHeight = containedObject.GetComponent<Renderer>().bounds.size.y;
             containedObject.transform.position = cell.centerPosition + new Vector3(0, (cellHeight / 2 + objectHeight / 2), 0);
+            
             containedObject.transform.SetParent(cell.visualRepresentation.transform);
         }
 

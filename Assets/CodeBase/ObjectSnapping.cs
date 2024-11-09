@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 namespace CodeBase.Services
@@ -11,6 +10,7 @@ namespace CodeBase.Services
 
         public void Start()
         {
+            
         }
 
         public void Update()
@@ -21,7 +21,7 @@ namespace CodeBase.Services
             }
         }
 
-        public void SnapToNearestBounds()
+        private void SnapToNearestBounds()
         {
             Bounds boundsElement1 = colliderElement1.bounds;
             Bounds boundsTarget = colliderTarget.bounds;
