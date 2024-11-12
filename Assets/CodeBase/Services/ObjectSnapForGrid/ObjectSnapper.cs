@@ -1,7 +1,7 @@
 using CodeBase.Grid;
 using UnityEngine;
 
-namespace CodeBase.Services.ObjectSnap
+namespace CodeBase.Services.ObjectSnapForGrid
 {
     public class ObjectSnapper : MonoBehaviour
     {
@@ -45,7 +45,7 @@ namespace CodeBase.Services.ObjectSnap
         private void SnapToNearestCell()
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
+            
             if (Physics.Raycast(ray, out RaycastHit hitInfo, Mathf.Infinity, _gridLayerMask))
             {
                 if (_gridMediator.IsCellUnderCursorOccupied(hitInfo.point))

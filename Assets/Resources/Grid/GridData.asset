@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: GridData
   m_EditorClassIdentifier: 
   _cellSize: 1.5
-  _width: 10
+  _width: 5
   _height: 5
+  _depth: 5
   _cellPrefab: {fileID: 2055237636985158768, guid: bf9da6b6440118d4682e8fb39c7a7023, type: 3}
+  _wall: {fileID: 2055237636985158768, guid: 458348c21711cfd4990b4b06bb653819, type: 3}

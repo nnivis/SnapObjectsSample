@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using CodeBase.Grid;
+using CodeBase.Services.ObjectSnapForGrid;
 using UnityEngine;
 
 namespace CodeBase.Services.ObjectSnap
