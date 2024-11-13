@@ -2,6 +2,8 @@ using UnityEngine;
 
 namespace CodeBase.Services.Grid_Cell
 {
+[RequireComponent(typeof(ObjectMagnetization))]
+[RequireComponent(typeof(MovableGridObject))]
     public class ObjectSnapController : MonoBehaviour
     {
         [SerializeField] private ObjectMagnetization _objectMagnetization;
