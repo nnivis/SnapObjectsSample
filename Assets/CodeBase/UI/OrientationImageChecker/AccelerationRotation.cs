@@ -16,7 +16,12 @@ namespace CodeBase.UI.OrientationImageChecker
             float zAngle = Mathf.Atan2(acceleration.x, -acceleration.y) * Mathf.Rad2Deg;
             zAngle = NormalizeAngle(zAngle);
 
-            if (zAngle > 300 && zAngle <= 360)
+            if (zAngle is > 300 and <= 360)
+            {
+                zAngle = 0;
+            }
+            
+            if (zAngle is > 155 and < 170)
             {
                 zAngle = 0;
             }
