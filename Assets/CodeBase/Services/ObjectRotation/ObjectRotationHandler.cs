@@ -6,9 +6,12 @@ namespace CodeBase.Services.ObjectRotation
     {
         [SerializeField] private ObjectRotationPanel _objectRotationPanel;
         private ObjectRotation _activeObject;
+        private ObjectRotationMediator _objectRotationMediator;
 
         public void Initialize()
         {
+            _objectRotationMediator = new ObjectRotationMediator();
+
             _objectRotationPanel.OnClickedLeftButton += ApplyLeftRotation;
             _objectRotationPanel.OnClickedRightButton += ApplyRightRotation;
         }
@@ -21,7 +24,7 @@ namespace CodeBase.Services.ObjectRotation
                 if (Physics.Raycast(ray, out RaycastHit hit))
                 {
                     ObjectRotation clickedObject = hit.collider.GetComponent<ObjectRotation>();
-                    
+
                     if (clickedObject != null || _activeObject == null)
                     {
                         _activeObject = clickedObject;
@@ -29,17 +32,28 @@ namespace CodeBase.Services.ObjectRotation
                 }
             }
         }
-        
+
         private void ApplyRightRotation()
         {
             if (_activeObject != null)
+            {
                 _activeObject.ApplyRotateRight();
+                NotifyObjectRotation();
+            }
         }
 
         private void ApplyLeftRotation()
         {
             if (_activeObject != null)
+            {
                 _activeObject.ApplyRotateLeft();
+                NotifyObjectRotation();
+            }
+        }
+
+        private void NotifyObjectRotation()
+        {
+            _objectRotationMediator.NotifyObjectRotationChange(_activeObject);
         }
     }
 }

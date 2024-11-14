@@ -151,7 +151,7 @@ namespace CodeBase.Services.Grid_Cell
                 }
             }
 
-            newPosition.y = transform.position.y; 
+            newPosition.y = transform.position.y;
 
             transform.position = newPosition;
 
@@ -160,9 +160,6 @@ namespace CodeBase.Services.Grid_Cell
                 Debug.LogWarning("Объект пересекает границы, дополнительная корректировка может быть необходима.");
             }
         }
-
-
-
 
         private void GenerateMagnetPoints(Collider targetCollider)
         {
@@ -201,6 +198,17 @@ namespace CodeBase.Services.Grid_Cell
             _magnetPoints[5] = new Vector3(bounds.max.x, bounds.center.y, bounds.min.z); // Правый передний угол
             _magnetPoints[6] = new Vector3(bounds.min.x, bounds.center.y, bounds.max.z); // Левый задний угол
             _magnetPoints[7] = new Vector3(bounds.max.x, bounds.center.y, bounds.max.z); // Правый задний угол
+
+
+           // _magnetPoints[8] = new Vector3(bounds.min.x, bounds.max.y, bounds.center.z); // Вверх левой стороны
+          //  _magnetPoints[9] = new Vector3(bounds.max.x, bounds.max.y, bounds.center.z); // Вверх правой стороны
+         //   _magnetPoints[10] = new Vector3(bounds.center.x, bounds.max.y, bounds.min.z); // Вверх передней стороны
+          //  _magnetPoints[11] = new Vector3(bounds.center.x, bounds.max.y, bounds.max.z); // Вверх задней стороны
+
+         //   _magnetPoints[12] = new Vector3(bounds.min.x, bounds.max.y, bounds.min.z); // Вверхний Левый передний угол
+          //  _magnetPoints[13] = new Vector3(bounds.max.x, bounds.max.y, bounds.min.z); // Вверхний Правый передний угол
+           // _magnetPoints[14] = new Vector3(bounds.min.x, bounds.max.y, bounds.max.z); // Вверхний Левый задний угол
+          //  _magnetPoints[15] = new Vector3(bounds.max.x, bounds.max.y, bounds.max.z); // Вверхний Правый задний угол
         }
 
 

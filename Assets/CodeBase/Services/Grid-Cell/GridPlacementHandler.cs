@@ -5,12 +5,16 @@ namespace CodeBase.Services.Grid_Cell
 {
     public class GridPlacementHandler : MonoBehaviour
     {
-        [SerializeField] private GridHandler _gridHandler;
+        private GridHandler _gridHandler;
+        private Vector3 _newPosition;
+        private GameObject _objectToPlace;
+        private Bounds _objectBounds;
+        private Transform _cellTransform;
 
-        public void Initialize(GridHandler gridHandler)
-        {
-            _gridHandler = gridHandler;
-        }
+        private float _savedZPosition;
+        private float _savedXPosition;
+
+        public void Initialize(GridHandler gridHandler) => _gridHandler = gridHandler;
 
         public bool AreCellsOccupied(Vector3 position)
         {
@@ -55,22 +59,23 @@ namespace CodeBase.Services.Grid_Cell
             return true;
         }
 
-        private void AdjustObjectPosition(GameObject objectToPlace, Transform cellTransform)
+        private void AdjustObjectPosition(GameObject objectToPlace, Transform cellTransform, bool? _isStart = null)
         {
-            Vector3 newPosition = cellTransform.position;
-            Collider objectCollider = objectToPlace.GetComponent<Collider>();
-            Bounds objectBounds;
+            _objectToPlace = objectToPlace;
+            _cellTransform = cellTransform;
+            _newPosition = _cellTransform.position;
 
+            Collider objectCollider = objectToPlace.GetComponent<Collider>();
             if (objectCollider != null)
             {
-                objectBounds = objectCollider.bounds;
+                _objectBounds = objectCollider.bounds;
             }
             else
             {
                 Renderer objectRenderer = objectToPlace.GetComponent<Renderer>();
                 if (objectRenderer != null)
                 {
-                    objectBounds = objectRenderer.bounds;
+                    _objectBounds = objectRenderer.bounds;
                 }
                 else
                 {
@@ -78,37 +83,72 @@ namespace CodeBase.Services.Grid_Cell
                 }
             }
 
+
             if (cellTransform.CompareTag("Floor"))
             {
-                float offsetToGround = objectBounds.min.y - objectToPlace.transform.position.y;
-                newPosition.y = cellTransform.position.y - offsetToGround;
+                float offsetToGroundY = _objectBounds.min.y - objectToPlace.transform.position.y;
+
+                _newPosition.y = cellTransform.position.y - offsetToGroundY;
+
+                Vector3 xzOffset = CalculateXZPositionOffset(objectToPlace, _objectBounds, cellTransform);
+                _newPosition.x = xzOffset.x;
+                _newPosition.z = xzOffset.z;
             }
 
             if (cellTransform.CompareTag("Wall"))
             {
                 Vector3 wallNormal = cellTransform.forward;
 
-                if (Mathf.Abs(wallNormal.z) > Mathf.Abs(wallNormal.x))
+                if (_isStart == false)
                 {
-                    float offsetZ = objectBounds.min.z - objectToPlace.transform.position.z;
-                    newPosition.z = cellTransform.position.z + Mathf.Sign(wallNormal.z) * objectBounds.extents.z -
-                                    offsetZ;
-                    newPosition.z += Mathf.Sign(wallNormal.z) * objectBounds.extents.z;
+                    if (Mathf.Abs(wallNormal.z) > Mathf.Abs(wallNormal.x))
+                        _newPosition.z = _savedZPosition;
+                    else
+                        _newPosition.x = _savedXPosition;
                 }
                 else
                 {
-                    float offsetX = objectBounds.max.x - objectToPlace.transform.position.x;
-                    newPosition.x = cellTransform.position.x - Mathf.Sign(wallNormal.x) * objectBounds.extents.x -
-                                    offsetX;
-                    newPosition.x += Mathf.Sign(wallNormal.x) * objectBounds.extents.x;
+                    if (Mathf.Abs(wallNormal.z) > Mathf.Abs(wallNormal.x))
+                    {
+                        float offsetZ = _objectBounds.min.z - objectToPlace.transform.position.z;
+                        _newPosition.z = cellTransform.position.z + Mathf.Sign(wallNormal.z) * _objectBounds.extents.z -
+                                         offsetZ;
+                        _newPosition.z += Mathf.Sign(wallNormal.z) * _objectBounds.extents.z;
+
+                        _savedZPosition = _newPosition.z;
+                    }
+                    else
+                    {
+                        float offsetX = _objectBounds.max.x - objectToPlace.transform.position.x;
+                        _newPosition.x = cellTransform.position.x - Mathf.Sign(wallNormal.x) * _objectBounds.extents.x -
+                                         offsetX;
+                        _newPosition.x += Mathf.Sign(wallNormal.x) * _objectBounds.extents.x;
+
+                        _savedXPosition = _newPosition.x;
+                    }
+
+                    float offsetToGroundY = _objectBounds.min.y - objectToPlace.transform.position.y;
+                    _newPosition.y = cellTransform.position.y - offsetToGroundY;
                 }
-
-
-                float offsetToGroundY = objectBounds.min.y - objectToPlace.transform.position.y;
-                newPosition.y = cellTransform.position.y - offsetToGroundY;
             }
 
-            objectToPlace.transform.position = newPosition;
+            objectToPlace.transform.position = _newPosition;
+        }
+
+        public void ApplyXZPositionOffset()
+        {
+            AdjustObjectPosition(_objectToPlace, _cellTransform, false);
+        }
+
+        private Vector3 CalculateXZPositionOffset(GameObject objectToPlace, Bounds objectBounds,
+            Transform cellTransform)
+        {
+            float offsetToGroundX = objectBounds.center.x - objectToPlace.transform.position.x;
+            float offsetToGroundZ = objectBounds.center.z - objectToPlace.transform.position.z;
+            Vector3 xzOffset = new Vector3(cellTransform.position.x - offsetToGroundX, 0,
+                cellTransform.position.z - offsetToGroundZ);
+
+            return xzOffset;
         }
 
         public List<Transform> GetCellsToOccupy(Vector3 position)

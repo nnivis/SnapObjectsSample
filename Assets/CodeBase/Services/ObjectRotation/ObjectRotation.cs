@@ -18,7 +18,12 @@ namespace CodeBase.Services.ObjectRotation
         public void ApplyRotateRight() => _targetRotation *= Quaternion.Euler(0, 45, 0);
 
         private void Update() =>
-            _objectTransform.localRotation = Quaternion.RotateTowards(_objectTransform.localRotation,
-                _targetRotation, Time.deltaTime * _rotationSpeed);
+            _objectTransform.localRotation = _targetRotation;
+
+        //private void Update() =>
+
+        //   _objectTransform.localRotation = Quaternion.RotateTowards(_objectTransform.localRotation,
+
+        //  _targetRotation, Time.deltaTime * _rotationSpeed);
     }
 }

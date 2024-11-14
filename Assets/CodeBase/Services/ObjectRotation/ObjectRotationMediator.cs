@@ -1,16 +1,16 @@
+using CodeBase.Services.Grid_Cell;
 using UnityEngine;
 
-public class ObjectRotationMediator : MonoBehaviour
+namespace CodeBase.Services.ObjectRotation
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public class ObjectRotationMediator
     {
-        
-    }
+        public void NotifyObjectRotationChange(ObjectRotation objectRotation)
+        {
+            GameObject gameObject = objectRotation.gameObject;
+            ObjectSnapController objectSnapController = gameObject.GetComponent<ObjectSnapController>();
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+            objectSnapController.UpdateCenterPosition();
+        }
     }
 }

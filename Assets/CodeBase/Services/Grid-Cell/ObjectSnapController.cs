@@ -2,8 +2,8 @@ using UnityEngine;
 
 namespace CodeBase.Services.Grid_Cell
 {
-[RequireComponent(typeof(ObjectMagnetization))]
-[RequireComponent(typeof(MovableGridObject))]
+    [RequireComponent(typeof(ObjectMagnetization))]
+    [RequireComponent(typeof(MovableGridObject))]
     public class ObjectSnapController : MonoBehaviour
     {
         [SerializeField] private ObjectMagnetization _objectMagnetization;
@@ -41,6 +41,11 @@ namespace CodeBase.Services.Grid_Cell
             {
                 _movableGridObject.HandleMouseInputForGrid();
             }
+        }
+
+        public void UpdateCenterPosition()
+        {
+            _movableGridObject.UpdateCenterPosition();
         }
     }
 }

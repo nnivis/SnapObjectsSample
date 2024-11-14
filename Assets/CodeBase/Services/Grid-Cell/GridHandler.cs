@@ -8,7 +8,7 @@ namespace CodeBase.Services.Grid_Cell
     public GridMaker[] grids;
     private List<CellStatus> _cell = new List<CellStatus>();
 
-    private void Start()
+    public void  Initialize()
     {
         foreach (GridMaker gridMaker in grids)
         {

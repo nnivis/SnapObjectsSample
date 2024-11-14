@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace CodeBase.Services.Grid_Cell
@@ -11,7 +12,7 @@ namespace CodeBase.Services.Grid_Cell
 
         private List<Transform> _currentCells = new List<Transform>();
         private bool _isDragging;
-        
+
         public void HandleMouseInputForGrid()
         {
             HandleMouseInput();
@@ -27,6 +28,7 @@ namespace CodeBase.Services.Grid_Cell
                     _isDragging = true;
                 }
             }
+
             if (Input.GetMouseButtonUp(0))
             {
                 _isDragging = false;
@@ -41,23 +43,22 @@ namespace CodeBase.Services.Grid_Cell
         private void SnapToNearestCell()
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        
+
             if (Physics.Raycast(ray, out RaycastHit hitInfo, Mathf.Infinity, _gridLayerMask))
             {
                 if (_gridPlacementHandler.AreCellsOccupied(hitInfo.point))
                 {
-                    return; 
+                    return;
                 }
-            
+
                 Transform nearestCell = _gridPlacementHandler.GetNearestAvailableCell(hitInfo.point, _snapRadius);
-            
+
                 if (nearestCell != null)
                 {
-                   
                     FreeCurrentCells();
-                    
+
                     bool canOccupy = _gridPlacementHandler.OccupyCell(nearestCell, this.gameObject);
-                
+
                     if (canOccupy)
                     {
                         _currentCells = _gridPlacementHandler.GetCellsToOccupy(nearestCell.position);
@@ -72,9 +73,16 @@ namespace CodeBase.Services.Grid_Cell
             {
                 _gridPlacementHandler.FreeCell(cell);
             }
+
             _currentCells.Clear();
         }
-        
+
+        public void ResetDraggingState()
+        {
+            _isDragging = false;
+            FreeCurrentCells();
+        }
+
         private void OnDrawGizmos()
         {
             Collider objectCollider = GetComponent<Collider>();
@@ -95,13 +103,11 @@ namespace CodeBase.Services.Grid_Cell
                 }
             }
         }
-        
-        public void ResetDraggingState()
+
+        public void UpdateCenterPosition()
         {
-            _isDragging = false;
-            FreeCurrentCells();
+            if (_currentCells.Any())
+                _gridPlacementHandler.ApplyXZPositionOffset();
         }
-
-
     }
 }
