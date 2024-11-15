@@ -6,15 +6,18 @@ namespace CodeBase.Services.Grid_Cell
     {
         [SerializeField] private LayerMask _layer;
 
+        private Vector3[] _magnetPoints;
         private Vector3 _screenPoint;
         private Vector3 _offset;
+        private Vector3 _nativeRotation;
+
         private Camera _camera;
+
         private bool _isDragging;
-        private Collider _collider;
-        private Collider _nearestCollider;
         private bool _isAttached;
 
-        private Vector3[] _magnetPoints;
+        private Collider _collider;
+        private Collider _nearestCollider;
 
         private void Awake()
         {
@@ -26,10 +29,7 @@ namespace CodeBase.Services.Grid_Cell
 
         public bool IsAttached() => _isAttached;
 
-        public void HandleMouseInputForObject()
-        {
-            HandleMouseInput();
-        }
+        public void HandleMouseInputForObject() => HandleMouseInput();
 
         private void HandleMouseInput()
         {
@@ -48,6 +48,9 @@ namespace CodeBase.Services.Grid_Cell
                           _screenPoint.z));
             _isDragging = true;
             _isAttached = false;
+
+            SetNativeRotate();
+            Debug.Log($"Update Rotation {_nativeRotation}");
         }
 
 
@@ -96,6 +99,7 @@ namespace CodeBase.Services.Grid_Cell
                     else if (distanceToMagnetPoint <= movementRadius)
                     {
                         FixedMove(nearestMagnetPoint);
+                        FixedRotation(_nearestCollider);
                     }
                 }
                 else
@@ -105,7 +109,6 @@ namespace CodeBase.Services.Grid_Cell
             }
             else
             {
-                //  transform.position = curPosition;
                 _isAttached = false;
             }
         }
@@ -152,14 +155,24 @@ namespace CodeBase.Services.Grid_Cell
             }
 
             newPosition.y = transform.position.y;
-
             transform.position = newPosition;
 
             if (objectBounds.Intersects(targetBounds))
             {
-                Debug.LogWarning("Объект пересекает границы, дополнительная корректировка может быть необходима.");
+                //  Debug.LogWarning("Объект пересекает границы, дополнительная корректировка может быть необходима.");
             }
         }
+
+        private void FixedRotation(Collider nearestCollider)
+        {
+            if (nearestCollider == null) return;
+
+            transform.rotation = nearestCollider.transform.rotation;
+        }
+
+        private void ApplyNativeRotation() => transform.eulerAngles = _nativeRotation;
+
+        private void SetNativeRotate() => _nativeRotation = transform.eulerAngles;
 
         private void GenerateMagnetPoints(Collider targetCollider)
         {
@@ -194,21 +207,21 @@ namespace CodeBase.Services.Grid_Cell
             _magnetPoints[2] = new Vector3(bounds.center.x, bounds.center.y, bounds.min.z); // Центр передней стороны
             _magnetPoints[3] = new Vector3(bounds.center.x, bounds.center.y, bounds.max.z); // Центр задней стороны
 
-            _magnetPoints[4] = new Vector3(bounds.min.x, bounds.center.y, bounds.min.z); // Левый передний угол
-            _magnetPoints[5] = new Vector3(bounds.max.x, bounds.center.y, bounds.min.z); // Правый передний угол
-            _magnetPoints[6] = new Vector3(bounds.min.x, bounds.center.y, bounds.max.z); // Левый задний угол
-            _magnetPoints[7] = new Vector3(bounds.max.x, bounds.center.y, bounds.max.z); // Правый задний угол
+          //  _magnetPoints[4] = new Vector3(bounds.min.x, bounds.center.y, bounds.min.z); // Левый передний угол
+          //  _magnetPoints[5] = new Vector3(bounds.max.x, bounds.center.y, bounds.min.z); // Правый передний угол
+          //  _magnetPoints[6] = new Vector3(bounds.min.x, bounds.center.y, bounds.max.z); // Левый задний угол
+         //   _magnetPoints[7] = new Vector3(bounds.max.x, bounds.center.y, bounds.max.z); // Правый задний угол
 
 
-           // _magnetPoints[8] = new Vector3(bounds.min.x, bounds.max.y, bounds.center.z); // Вверх левой стороны
-          //  _magnetPoints[9] = new Vector3(bounds.max.x, bounds.max.y, bounds.center.z); // Вверх правой стороны
-         //   _magnetPoints[10] = new Vector3(bounds.center.x, bounds.max.y, bounds.min.z); // Вверх передней стороны
-          //  _magnetPoints[11] = new Vector3(bounds.center.x, bounds.max.y, bounds.max.z); // Вверх задней стороны
+            // _magnetPoints[8] = new Vector3(bounds.min.x, bounds.max.y, bounds.center.z); // Вверх левой стороны
+            //  _magnetPoints[9] = new Vector3(bounds.max.x, bounds.max.y, bounds.center.z); // Вверх правой стороны
+            //   _magnetPoints[10] = new Vector3(bounds.center.x, bounds.max.y, bounds.min.z); // Вверх передней стороны
+            //  _magnetPoints[11] = new Vector3(bounds.center.x, bounds.max.y, bounds.max.z); // Вверх задней стороны
 
-         //   _magnetPoints[12] = new Vector3(bounds.min.x, bounds.max.y, bounds.min.z); // Вверхний Левый передний угол
-          //  _magnetPoints[13] = new Vector3(bounds.max.x, bounds.max.y, bounds.min.z); // Вверхний Правый передний угол
-           // _magnetPoints[14] = new Vector3(bounds.min.x, bounds.max.y, bounds.max.z); // Вверхний Левый задний угол
-          //  _magnetPoints[15] = new Vector3(bounds.max.x, bounds.max.y, bounds.max.z); // Вверхний Правый задний угол
+            //   _magnetPoints[12] = new Vector3(bounds.min.x, bounds.max.y, bounds.min.z); // Вверхний Левый передний угол
+            //  _magnetPoints[13] = new Vector3(bounds.max.x, bounds.max.y, bounds.min.z); // Вверхний Правый передний угол
+            // _magnetPoints[14] = new Vector3(bounds.min.x, bounds.max.y, bounds.max.z); // Вверхний Левый задний угол
+            //  _magnetPoints[15] = new Vector3(bounds.max.x, bounds.max.y, bounds.max.z); // Вверхний Правый задний угол
         }
 
 
@@ -234,6 +247,13 @@ namespace CodeBase.Services.Grid_Cell
             return nearestPoint;
         }
 
+        public void DisableMagnetization()
+        {
+            _isDragging = false;
+            _isAttached = false;
+            _nearestCollider = null;
+        }
+
         private void OnDrawGizmos()
         {
             if (_magnetPoints == null || _magnetPoints.Length == 0)
@@ -243,13 +263,6 @@ namespace CodeBase.Services.Grid_Cell
             {
                 Gizmos.DrawSphere(point, 0.1f);
             }
-        }
-
-        public void DisableMagnetization()
-        {
-            _isDragging = false;
-            _isAttached = false;
-            _nearestCollider = null;
         }
     }
 }

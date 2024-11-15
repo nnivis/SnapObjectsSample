@@ -8,16 +8,12 @@ namespace CodeBase.Services.Grid_Cell
     {
         [SerializeField] private ObjectMagnetization _objectMagnetization;
         [SerializeField] private MovableGridObject _movableGridObject;
-
-        private bool _isMagnetized = false;
+        private bool _isMagnetized;
 
         private void Awake()
         {
-            if (_objectMagnetization == null)
-                _objectMagnetization = GetComponent<ObjectMagnetization>();
-
-            if (_movableGridObject == null)
-                _movableGridObject = GetComponent<MovableGridObject>();
+            _objectMagnetization = GetComponent<ObjectMagnetization>();
+            _movableGridObject = GetComponent<MovableGridObject>();
         }
 
         private void Update()
@@ -43,9 +39,6 @@ namespace CodeBase.Services.Grid_Cell
             }
         }
 
-        public void UpdateCenterPosition()
-        {
-            _movableGridObject.UpdateCenterPosition();
-        }
+        public void UpdateCenterPosition() => _movableGridObject.UpdateCenterPosition();
     }
 }

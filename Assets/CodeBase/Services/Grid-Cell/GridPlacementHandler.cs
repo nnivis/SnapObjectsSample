@@ -5,6 +5,8 @@ namespace CodeBase.Services.Grid_Cell
 {
     public class GridPlacementHandler : MonoBehaviour
     {
+        private const string Floor = "Floor";
+        private const string Wall = "Wall";
         private GridHandler _gridHandler;
         private Vector3 _newPosition;
         private GameObject _objectToPlace;
@@ -13,6 +15,7 @@ namespace CodeBase.Services.Grid_Cell
 
         private float _savedZPosition;
         private float _savedXPosition;
+        private float _savedYPosition;
 
         public void Initialize(GridHandler gridHandler) => _gridHandler = gridHandler;
 
@@ -66,6 +69,7 @@ namespace CodeBase.Services.Grid_Cell
             _newPosition = _cellTransform.position;
 
             Collider objectCollider = objectToPlace.GetComponent<Collider>();
+            Collider cellCollider = _cellTransform.GetComponent<Collider>();
             if (objectCollider != null)
             {
                 _objectBounds = objectCollider.bounds;
@@ -83,62 +87,89 @@ namespace CodeBase.Services.Grid_Cell
                 }
             }
 
-
-            if (cellTransform.CompareTag("Floor"))
+            if (cellTransform.CompareTag(Floor))
             {
                 float offsetToGroundY = _objectBounds.min.y - objectToPlace.transform.position.y;
+                Vector3 xzOffset = CalculateXZPositionOffset(objectToPlace, _objectBounds, cellTransform);
 
                 _newPosition.y = cellTransform.position.y - offsetToGroundY;
-
-                Vector3 xzOffset = CalculateXZPositionOffset(objectToPlace, _objectBounds, cellTransform);
                 _newPosition.x = xzOffset.x;
                 _newPosition.z = xzOffset.z;
             }
 
-            if (cellTransform.CompareTag("Wall"))
+            if (cellTransform.CompareTag(Wall))
             {
                 Vector3 wallNormal = cellTransform.forward;
 
                 if (_isStart == false)
                 {
-                    if (Mathf.Abs(wallNormal.z) > Mathf.Abs(wallNormal.x))
-                        _newPosition.z = _savedZPosition;
-                    else
-                        _newPosition.x = _savedXPosition;
+                    _newPosition = new Vector3(
+                        Mathf.Abs(wallNormal.z) > Mathf.Abs(wallNormal.x) ? _newPosition.x : _savedXPosition,
+                        _savedYPosition,
+                        Mathf.Abs(wallNormal.z) > Mathf.Abs(wallNormal.x) ? _savedZPosition : _newPosition.z
+                    );
                 }
                 else
                 {
+                    
+                    ApplyYRotationForWallObjects();
+                    
                     if (Mathf.Abs(wallNormal.z) > Mathf.Abs(wallNormal.x))
                     {
                         float offsetZ = _objectBounds.min.z - objectToPlace.transform.position.z;
+
                         _newPosition.z = cellTransform.position.z + Mathf.Sign(wallNormal.z) * _objectBounds.extents.z -
                                          offsetZ;
                         _newPosition.z += Mathf.Sign(wallNormal.z) * _objectBounds.extents.z;
-
                         _savedZPosition = _newPosition.z;
                     }
                     else
                     {
                         float offsetX = _objectBounds.max.x - objectToPlace.transform.position.x;
+
                         _newPosition.x = cellTransform.position.x - Mathf.Sign(wallNormal.x) * _objectBounds.extents.x -
                                          offsetX;
                         _newPosition.x += Mathf.Sign(wallNormal.x) * _objectBounds.extents.x;
-
                         _savedXPosition = _newPosition.x;
                     }
 
+                    float cellHeight = cellCollider.bounds.size.y;
                     float offsetToGroundY = _objectBounds.min.y - objectToPlace.transform.position.y;
-                    _newPosition.y = cellTransform.position.y - offsetToGroundY;
+
+                    _newPosition.y = cellTransform.position.y - offsetToGroundY - cellHeight / 2;
+                    _savedYPosition = _newPosition.y;
                 }
             }
 
             objectToPlace.transform.position = _newPosition;
         }
 
-        public void ApplyXZPositionOffset()
+        private void ApplyYRotationForWallObjects()
         {
-            AdjustObjectPosition(_objectToPlace, _cellTransform, false);
+            Vector3 wallNormal = _cellTransform.forward;
+            float targetRotationY;
+
+            if (Mathf.Abs(wallNormal.z) > Mathf.Abs(wallNormal.x))
+            {
+                targetRotationY = 180f; 
+            }
+            else
+            {
+                targetRotationY = -90f; 
+            }
+
+            float currentYRotation = _objectToPlace.transform.eulerAngles.y;
+            if (Mathf.Abs(Mathf.DeltaAngle(currentYRotation, targetRotationY)) > 0.01f)
+            {
+                _objectToPlace.transform.rotation = Quaternion.Euler(
+                    _objectToPlace.transform.rotation.eulerAngles.x,
+                    targetRotationY,
+                    _objectToPlace.transform.rotation.eulerAngles.z
+                );
+            }
         }
+
+        public void ApplyXZPositionOffset() => AdjustObjectPosition(_objectToPlace, _cellTransform, false);
 
         private Vector3 CalculateXZPositionOffset(GameObject objectToPlace, Bounds objectBounds,
             Transform cellTransform)

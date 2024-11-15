@@ -7,8 +7,6 @@ namespace CodeBase.Services.Grid_Cell
     {
         public bool IsOccupied { get; private set; }
         public Color occupiedColor = Color.yellow;
-        public string otherTag = "Furniture";
-
         private Color _originalSurfaceColor;
         private MeshRenderer _meshRenderer;
 
@@ -16,22 +14,6 @@ namespace CodeBase.Services.Grid_Cell
         {
             _meshRenderer = GetComponent<MeshRenderer>();
             _originalSurfaceColor = _meshRenderer.material.color;
-        }
-
-        private void OnTriggerEnter(Collider other)
-        {
-            if (!IsOccupied && other.tag == otherTag)
-            {
-                SetOccupied(true);
-            }
-        }
-
-        private void OnTriggerExit(Collider other)
-        {
-            if (IsOccupied && other.tag == otherTag)
-            {
-                SetOccupied(false);
-            }
         }
 
         public void SetOccupied(bool occupied)

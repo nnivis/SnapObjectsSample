@@ -6,9 +6,9 @@ namespace CodeBase.UI.OrientationImageChecker
     public class AccelerationRotation : MonoBehaviour
     {
         [SerializeField] private TextMeshProUGUI _text;
-        private RectTransform rectTransform;
+        private RectTransform _rectTransform;
 
-        private void Start() => rectTransform = GetComponent<RectTransform>();
+        private void Start() => _rectTransform = GetComponent<RectTransform>();
 
         private void FixedUpdate()
         {
@@ -27,7 +27,7 @@ namespace CodeBase.UI.OrientationImageChecker
             }
 
             float snappedRotation = SnapToNearest90Degree(zAngle);
-            rectTransform.localRotation = Quaternion.Euler(0, 0, snappedRotation);
+            _rectTransform.localRotation = Quaternion.Euler(0, 0, snappedRotation);
 
             if (_text != null)
             {

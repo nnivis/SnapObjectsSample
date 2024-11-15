@@ -1,17 +1,12 @@
 using UnityEngine;
 
-namespace CodeBase.Services
+namespace CodeBase
 {
     public class ObjectSnapping : MonoBehaviour
     {
         public MeshCollider colliderTarget;
         public MeshCollider colliderElement1;
         public float snapDistance = 1;
-
-        public void Start()
-        {
-            
-        }
 
         public void Update()
         {
