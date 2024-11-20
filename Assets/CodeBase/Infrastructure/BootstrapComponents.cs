@@ -12,12 +12,12 @@ namespace CodeBase.Infrastructure
 
         private void Start()
         {
-             InitializeObjectRotation();
+            // InitializeObjectRotation();
              InitializeGridHandler();
              InitializePlacement();
         }
         
-        private void InitializeObjectRotation() => _objectRotationHandler.Initialize();
+        //private void InitializeObjectRotation() => _objectRotationHandler.Initialize();
         private void InitializeGridHandler() => _gridHandler.Initialize();
         private void InitializePlacement() => _placementHandler.Initialize(_gridHandler);
     }

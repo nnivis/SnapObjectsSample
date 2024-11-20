@@ -8,9 +8,9 @@ namespace CodeBase.Services.ObjectRotation
         private ObjectRotation _activeObject;
         private ObjectRotationMediator _objectRotationMediator;
 
-        public void Initialize()
+        public void Start()
         {
-            _objectRotationMediator = new ObjectRotationMediator();
+           // _objectRotationMediator = new ObjectRotationMediator();
 
             _objectRotationPanel.OnClickedLeftButton += ApplyLeftRotation;
             _objectRotationPanel.OnClickedRightButton += ApplyRightRotation;
@@ -38,8 +38,10 @@ namespace CodeBase.Services.ObjectRotation
             if (_activeObject != null)
             {
                 _activeObject.ApplyRotateRight();
-                NotifyObjectRotation();
+                Debug.Log("Hello");
+              //  NotifyObjectRotation();
             }
+        
         }
 
         private void ApplyLeftRotation()
@@ -47,13 +49,13 @@ namespace CodeBase.Services.ObjectRotation
             if (_activeObject != null)
             {
                 _activeObject.ApplyRotateLeft();
-                NotifyObjectRotation();
+               // NotifyObjectRotation();
             }
         }
 
-        private void NotifyObjectRotation()
+        /*private void NotifyObjectRotation()
         {
             _objectRotationMediator.NotifyObjectRotationChange(_activeObject);
-        }
+        }*/
     }
 }
