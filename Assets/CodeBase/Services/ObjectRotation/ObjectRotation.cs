@@ -12,6 +12,7 @@ namespace CodeBase.Services.ObjectRotation
         private Transform _objectTransform;
         private float _rotationSpeed = 170.0f;
         private Quaternion _targetRotation;
+        private bool _useHoldLogic;
 
         private void Start()
         {
@@ -20,40 +21,77 @@ namespace CodeBase.Services.ObjectRotation
             SubscribeToObjectRotationEvents();
         }
 
+        public void SetRotationLogic(bool useHoldLogic) => _useHoldLogic = useHoldLogic;
+
         private void SubscribeToObjectRotationEvents()
         {
             _snapRotationObject = GetComponent<SnapRotationObject>();
 
             if (_snapRotationObject != null)
+            {
                 _snapRotationObject.OnChangeNativeRotation += ApplyTargetObjectRotation;
+                _snapRotationObject.OnChangeNativeQuaternionRotation += ApplyTargetObjectQuaternionRotation;
+                
+            }
         }
 
-        private void Update() =>
-            _objectTransform.localRotation = Quaternion.RotateTowards(_objectTransform.localRotation,
-                _targetRotation, Time.deltaTime * _rotationSpeed);
+        private void Update()
+        {
+            if (_useHoldLogic)
+                return;
+
+            _objectTransform.localRotation = Quaternion.RotateTowards(
+                _objectTransform.localRotation,
+                _targetRotation,
+                Time.deltaTime * _rotationSpeed
+            );
+        }
+
 
         public void ApplyRotateLeft()
         {
-            _targetRotation *= Quaternion.Euler(0, -45, 0);
+            _targetRotation *= Quaternion.Euler(0, -90, 0);
             NotifyNativeRotationChanged();
         }
 
         public void ApplyRotateRight()
         {
-            _targetRotation *= Quaternion.Euler(0, 45, 0);
+            _targetRotation *= Quaternion.Euler(0, 90, 0);
+            NotifyNativeRotationChanged();
+        }
+
+        public void ApplyRotateHoldRight()
+        {
+            _objectTransform.Rotate(Vector3.up, _rotationSpeed * Time.deltaTime);
+            _targetRotation = _objectTransform.rotation;
+            
+            NotifyNativeRotationChanged();
+        }
+
+        
+        public void ApplyRotateHoldLeft()
+        {
+            _objectTransform.Rotate(Vector3.up, -_rotationSpeed * Time.deltaTime);
+            _targetRotation = _objectTransform.rotation;
+            
             NotifyNativeRotationChanged();
         }
 
         private void ApplyTargetObjectRotation(Collider target) => _targetRotation = target.transform.rotation;
 
+        private void ApplyTargetObjectQuaternionRotation(Quaternion quaternion) => _targetRotation = quaternion;
+
         private void NotifyNativeRotationChanged() => OnChangeNativeRotation?.Invoke(_targetRotation);
 
-        
+
         #region Commit
 
         //private void Update() =>
+
         //  _objectTransform.localRotation = _targetRotation;
+
         //public void ApplyRotateLeft() => _objectTransform.localRotation *= Quaternion.Euler(0, -45, 0);
+
 
         // public void ApplyRotateRight() => _objectTransform.localRotation *= Quaternion.Euler(0, 45, 0);
 

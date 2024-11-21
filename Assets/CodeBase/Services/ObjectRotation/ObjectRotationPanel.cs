@@ -8,19 +8,19 @@ namespace CodeBase.Services.ObjectRotation
     {
         public event Action OnClickedLeftButton;
         public event Action OnClickedRightButton;
-        [SerializeField] private Button _leftButton;
-        [SerializeField] private Button _rightButton;
+        [SerializeField] private Button leftButton;
+        [SerializeField] private Button rightButton;
 
         private void OnEnable()
         {
-            _leftButton.onClick.AddListener(OnClickLeftButton);
-            _rightButton.onClick.AddListener(OnClickRightButton);
+            leftButton.onClick.AddListener(OnClickLeftButton);
+            rightButton.onClick.AddListener(OnClickRightButton);
         }
         
         private void OnDisable()
         {
-        _leftButton.onClick.RemoveListener(OnClickLeftButton);
-        _rightButton.onClick.RemoveListener(OnClickRightButton);
+        leftButton.onClick.RemoveListener(OnClickLeftButton);
+        rightButton.onClick.RemoveListener(OnClickRightButton);
         }
 
         private void OnClickRightButton() => OnClickedRightButton?.Invoke();

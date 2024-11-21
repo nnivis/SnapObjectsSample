@@ -1,19 +1,35 @@
+using CodeBase.Services.MagnetizationObject_2._0;
 using UnityEngine;
 
 namespace CodeBase.Services.ObjectRotation
 {
     public class ObjectRotationHandler : MonoBehaviour
     {
-        [SerializeField] private ObjectRotationPanel _objectRotationPanel;
+        [SerializeField] private ObjectRotationPanel clickRotationPanel;
+        [SerializeField] private ObjectRotationHoldPanel holdRotationPanel;
+        [SerializeField] private bool _useHoldLogic;
         private ObjectRotation _activeObject;
         private ObjectRotationMediator _objectRotationMediator;
+        private SnapObject _currentSnapObject;
 
-        public void Start()
+        private void OnEnable()
         {
-           // _objectRotationMediator = new ObjectRotationMediator();
+            _useHoldLogic = true;
 
-            _objectRotationPanel.OnClickedLeftButton += ApplyLeftRotation;
-            _objectRotationPanel.OnClickedRightButton += ApplyRightRotation;
+            holdRotationPanel.OnHoldLeftButton += ApplyLeftHoldRotation;
+            holdRotationPanel.OnHoldRightButton += ApplyRightHoldRotation;
+
+            clickRotationPanel.OnClickedLeftButton += ApplyLeftRotation;
+            clickRotationPanel.OnClickedRightButton += ApplyRightRotation;
+        }
+
+        private void OnDestroy()
+        {
+            holdRotationPanel.OnHoldLeftButton += ApplyLeftHoldRotation;
+            holdRotationPanel.OnHoldRightButton += ApplyRightHoldRotation;
+
+            clickRotationPanel.OnClickedLeftButton += ApplyLeftRotation;
+            clickRotationPanel.OnClickedRightButton += ApplyRightRotation;
         }
 
         private void Update()
@@ -27,29 +43,71 @@ namespace CodeBase.Services.ObjectRotation
 
                     if (clickedObject != null || _activeObject == null)
                     {
-                        _activeObject = clickedObject;
+                        UpdateActiveObject(clickedObject);
                     }
                 }
             }
         }
 
-        private void ApplyRightRotation()
+        private void UpdateActiveObject(ObjectRotation newActiveObject)
         {
+            if (_currentSnapObject != null)
+            {
+                _currentSnapObject.OnSnapStatus -= HandleSnapStatus;
+                _currentSnapObject = null;
+            }
+
+            _activeObject = newActiveObject;
             if (_activeObject != null)
             {
-                _activeObject.ApplyRotateRight();
-                Debug.Log("Hello");
-              //  NotifyObjectRotation();
+                SnapObject snapObject = _activeObject.GetComponent<SnapObject>();
+                if (snapObject != null)
+                {
+                    _currentSnapObject = snapObject;
+                    _currentSnapObject.OnSnapStatus += HandleSnapStatus;
+                }
             }
-        
+        }
+
+        private void HandleSnapStatus(bool isSnapped) => _useHoldLogic = isSnapped;
+
+        private void ApplyNewPositionForObject() => _currentSnapObject.UpdatePosition();
+
+        private void ApplyRightRotation()
+        {
+            if (_activeObject != null && !_useHoldLogic)
+            {
+                _activeObject.SetRotationLogic(_useHoldLogic);
+                _activeObject.ApplyRotateRight();
+                ApplyNewPositionForObject();
+            }
         }
 
         private void ApplyLeftRotation()
         {
-            if (_activeObject != null)
+            if (_activeObject != null && !_useHoldLogic)
             {
+                _activeObject.SetRotationLogic(_useHoldLogic);
                 _activeObject.ApplyRotateLeft();
-               // NotifyObjectRotation();
+                ApplyNewPositionForObject();
+            }
+        }
+
+        private void ApplyRightHoldRotation()
+        {
+            if (_activeObject != null && _useHoldLogic)
+            {
+                _activeObject.SetRotationLogic(_useHoldLogic);
+                _activeObject.ApplyRotateHoldRight();
+            }
+        }
+
+        private void ApplyLeftHoldRotation()
+        {
+            if (_activeObject != null && _useHoldLogic)
+            {
+                _activeObject.SetRotationLogic(_useHoldLogic);
+                _activeObject.ApplyRotateHoldLeft();
             }
         }
 

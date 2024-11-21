@@ -1,14 +1,11 @@
-using TMPro;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace CodeBase.UI.OrientationImageChecker
 {
     public class AccelerationRotation : MonoBehaviour
     {
-        // [SerializeField] private TextMeshProUGUI _text;
-        private RectTransform _rectTransform;
-
-        private void Start() => _rectTransform = GetComponent<RectTransform>();
+        [SerializeField] private List<RectTransform> _rectTransforms;
 
         private void FixedUpdate()
         {
@@ -16,27 +13,25 @@ namespace CodeBase.UI.OrientationImageChecker
             float zAngle = Mathf.Atan2(acceleration.x, -acceleration.y) * Mathf.Rad2Deg;
             zAngle = NormalizeAngle(zAngle);
 
-      
             if (zAngle is > 300 and <= 360)
             {
                 zAngle = 0;
             }
 
             float snappedRotation = SnapToNearest90Degree(zAngle);
-            _rectTransform.localRotation = Quaternion.Euler(0, 0, snappedRotation);
 
-            /*
-            if (_text != null)
+            foreach (var rectTransform in _rectTransforms)
             {
-                _text.text = $"Accelerometer Z Angle: {zAngle:F2}°\nSnapped Rotation (Z): {snappedRotation}°";
+                if (rectTransform != null)
+                {
+                    rectTransform.localRotation = Quaternion.Euler(0, 0, snappedRotation);
+                }
             }
-        */
-            
         }
 
         private float SnapToNearest90Degree(float angle)
         {
-            float[] possibleAngles = {0, 90, 0, 270};
+            float[] possibleAngles = {0, 90, 180, 270};
             float closest = possibleAngles[0];
             float minDifference = Mathf.Abs(angle - closest);
 
