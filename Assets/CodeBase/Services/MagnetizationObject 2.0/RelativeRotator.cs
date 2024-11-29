@@ -6,13 +6,15 @@ namespace CodeBase.Services.MagnetizationObject_2._0
     public class RelativeRotator : MonoBehaviour
     {
         public bool IsRotatorActive => _isActive;
+        public event Action<bool> OnRotatorStatusChange;
         
         [SerializeField] private RelativeRotatorView relativeRotatorView;
-        private bool _isActive = false;
+        private bool _isActive;
         public void Start()
         {
             relativeRotatorView.OnClickedButton += UpdateRotatorStatus;
             UpdateView();
+            OnRotatorStatusChange?.Invoke(!_isActive);
         }
         
         public void OnDisable() => relativeRotatorView.OnClickedButton -= UpdateRotatorStatus;
@@ -21,6 +23,8 @@ namespace CodeBase.Services.MagnetizationObject_2._0
         {
             _isActive = !_isActive;
             UpdateView();
+            
+            OnRotatorStatusChange?.Invoke(!_isActive);
         }
 
         private void UpdateView() => relativeRotatorView.UpdateView(_isActive);

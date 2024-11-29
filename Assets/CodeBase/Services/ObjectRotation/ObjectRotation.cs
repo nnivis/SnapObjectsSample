@@ -10,7 +10,7 @@ namespace CodeBase.Services.ObjectRotation
 
         private SnapRotationObject _snapRotationObject;
         private Transform _objectTransform;
-        private float _rotationSpeed = 170.0f;
+        private const float RotationSpeed = 170.0f;
         private Quaternion _targetRotation;
         private bool _useHoldLogic;
 
@@ -43,26 +43,26 @@ namespace CodeBase.Services.ObjectRotation
             _objectTransform.localRotation = Quaternion.RotateTowards(
                 _objectTransform.localRotation,
                 _targetRotation,
-                Time.deltaTime * _rotationSpeed
+                Time.deltaTime * RotationSpeed
             );
         }
 
 
         public void ApplyRotateLeft()
         {
-            _targetRotation *= Quaternion.Euler(0, -90, 0);
+            _targetRotation *= Quaternion.Euler(0, -45, 0);
             NotifyNativeRotationChanged();
         }
 
         public void ApplyRotateRight()
         {
-            _targetRotation *= Quaternion.Euler(0, 90, 0);
+            _targetRotation *= Quaternion.Euler(0, 45, 0);
             NotifyNativeRotationChanged();
         }
 
         public void ApplyRotateHoldRight()
         {
-            _objectTransform.Rotate(Vector3.up, _rotationSpeed * Time.deltaTime);
+            _objectTransform.Rotate(Vector3.up, RotationSpeed * Time.deltaTime);
             _targetRotation = _objectTransform.rotation;
             
             NotifyNativeRotationChanged();
@@ -71,7 +71,7 @@ namespace CodeBase.Services.ObjectRotation
         
         public void ApplyRotateHoldLeft()
         {
-            _objectTransform.Rotate(Vector3.up, -_rotationSpeed * Time.deltaTime);
+            _objectTransform.Rotate(Vector3.up, -RotationSpeed * Time.deltaTime);
             _targetRotation = _objectTransform.rotation;
             
             NotifyNativeRotationChanged();

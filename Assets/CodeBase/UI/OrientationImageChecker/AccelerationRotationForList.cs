@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace CodeBase.UI.OrientationImageChecker
 {
-    public class AccelerationRotation : MonoBehaviour
+    public class AccelerationRotationForList : MonoBehaviour
     {
         [SerializeField] private List<RectTransform> _rectTransforms;
 

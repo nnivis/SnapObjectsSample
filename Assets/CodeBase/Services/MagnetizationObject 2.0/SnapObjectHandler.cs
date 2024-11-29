@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using CodeBase.Services.MagnetizationObject_2._0.Snap;
 using UnityEngine;
 
 namespace CodeBase.Services.MagnetizationObject_2._0
@@ -6,15 +7,9 @@ namespace CodeBase.Services.MagnetizationObject_2._0
     [RequireComponent(typeof(RelativeRotator))]
     public class SnapObjectHandler : MonoBehaviour
     {
-        [SerializeField] private RelativeRotator _rotator;
-        [SerializeField] private List<SnapObject> _snapObjects;
+        [SerializeField] private RelativeRotator rotator;
+        [SerializeField] private List<SnapObject> snapObjects;
 
-        private void Start()
-        {
-            foreach (SnapObject snapObject in _snapObjects)
-            {
-                snapObject.Initialize(_rotator);
-            }
-        }
+        private void Start() => snapObjects.ForEach(snapObject => snapObject.Initialize(rotator));
     }
 }

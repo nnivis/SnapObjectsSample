@@ -1,4 +1,5 @@
 using CodeBase.Services.MagnetizationObject_2._0;
+using CodeBase.Services.MagnetizationObject_2._0.Snap;
 using UnityEngine;
 
 namespace CodeBase.Services.ObjectRotation
@@ -7,10 +8,13 @@ namespace CodeBase.Services.ObjectRotation
     {
         [SerializeField] private ObjectRotationPanel clickRotationPanel;
         [SerializeField] private ObjectRotationHoldPanel holdRotationPanel;
-        [SerializeField] private bool _useHoldLogic;
+        [SerializeField] private RelativeRotator relativeRotator;
+
+        private bool _useHoldLogic;
         private ObjectRotation _activeObject;
         private ObjectRotationMediator _objectRotationMediator;
         private SnapObject _currentSnapObject;
+        private SnapRotationObject _currentSnapRotationObject;
 
         private void OnEnable()
         {
@@ -21,6 +25,8 @@ namespace CodeBase.Services.ObjectRotation
 
             clickRotationPanel.OnClickedLeftButton += ApplyLeftRotation;
             clickRotationPanel.OnClickedRightButton += ApplyRightRotation;
+
+            relativeRotator.OnRotatorStatusChange += HandleSnapStatus;
         }
 
         private void OnDestroy()
@@ -30,6 +36,8 @@ namespace CodeBase.Services.ObjectRotation
 
             clickRotationPanel.OnClickedLeftButton += ApplyLeftRotation;
             clickRotationPanel.OnClickedRightButton += ApplyRightRotation;
+
+            relativeRotator.OnRotatorStatusChange -= HandleSnapStatus;
         }
 
         private void Update()
@@ -61,15 +69,26 @@ namespace CodeBase.Services.ObjectRotation
             if (_activeObject != null)
             {
                 SnapObject snapObject = _activeObject.GetComponent<SnapObject>();
+                SnapRotationObject snapRotationObject = _activeObject.GetComponent<SnapRotationObject>();
                 if (snapObject != null)
                 {
                     _currentSnapObject = snapObject;
+                    _currentSnapRotationObject = snapRotationObject;
                     _currentSnapObject.OnSnapStatus += HandleSnapStatus;
                 }
             }
         }
 
-        private void HandleSnapStatus(bool isSnapped) => _useHoldLogic = isSnapped;
+        private void HandleSnapStatus(bool isSnapped)
+        {
+            if (relativeRotator.IsRotatorActive || (_currentSnapObject != null && _currentSnapRotationObject.IsSnapped))
+                _useHoldLogic = false;
+            else if (!relativeRotator.IsRotatorActive ||
+                     (_currentSnapObject != null && _currentSnapRotationObject.IsSnapped))
+                _useHoldLogic = true;
+            else
+                _useHoldLogic = isSnapped;
+        }
 
         private void ApplyNewPositionForObject() => _currentSnapObject.UpdatePosition();
 
@@ -110,10 +129,5 @@ namespace CodeBase.Services.ObjectRotation
                 _activeObject.ApplyRotateHoldLeft();
             }
         }
-
-        /*private void NotifyObjectRotation()
-        {
-            _objectRotationMediator.NotifyObjectRotationChange(_activeObject);
-        }*/
     }
 }

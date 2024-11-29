@@ -689,8 +689,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d83a98c65ac489692e0e61fea66eb16, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _rotator: {fileID: 459437667}
-  _snapObjects:
+  rotator: {fileID: 459437667}
+  snapObjects:
   - {fileID: 8751040956936900211}
 --- !u!114 &459437667
 MonoBehaviour:
@@ -751,6 +751,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   clickRotationPanel: {fileID: 1470466178}
   holdRotationPanel: {fileID: 1470466180}
+  relativeRotator: {fileID: 459437667}
 --- !u!1 &678193330
 GameObject:
   m_ObjectHideFlags: 0
@@ -1974,8 +1975,8 @@ MonoBehaviour:
   targetLayerMask:
     serializedVersion: 2
     m_Bits: 128
-  snapDistance: 2
-  searchRadius: 2
+  snapDistance: 1.6
+  searchRadius: 1.8
 --- !u!114 &8751040956936900212
 MonoBehaviour:
   m_ObjectHideFlags: 0

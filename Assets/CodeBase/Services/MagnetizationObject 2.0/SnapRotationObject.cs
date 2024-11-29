@@ -1,4 +1,5 @@
 ﻿using System;
+using CodeBase.Services.MagnetizationObject_2._0.Snap;
 using UnityEngine;
 
 namespace CodeBase.Services.MagnetizationObject_2._0
@@ -6,20 +7,19 @@ namespace CodeBase.Services.MagnetizationObject_2._0
     [RequireComponent(typeof(SnapObject))]
     public class SnapRotationObject : MonoBehaviour
     {
+        public bool IsSnapped => _isSnapped;
         public event Action<Collider> OnChangeNativeRotation;
         public event Action<Quaternion> OnChangeNativeQuaternionRotation;
 
         private SnapObject _snapObject;
         private ObjectRotation.ObjectRotation _objectRotation;
         private Quaternion _nativeRotation;
-        private CalculateSnapRotation _calculateSnapRotation;
 
         private bool _isSnapped;
 
         private void OnEnable()
         {
             _snapObject = GetComponent<SnapObject>();
-            _calculateSnapRotation = new CalculateSnapRotation();
 
             SubscribeToObjectRotationEvents();
             SetNativeRotation();
