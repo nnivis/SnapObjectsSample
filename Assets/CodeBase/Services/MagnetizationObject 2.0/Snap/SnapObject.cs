@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace CodeBase.Services.MagnetizationObject_2._0.Snap
 {
-    [RequireComponent((typeof(BoxCollider)))]
+    [RequireComponent((typeof(MeshCollider)))]
     public class SnapObject : MonoBehaviour
     {
         public event Action<bool> OnSnapStatus;
@@ -63,7 +63,7 @@ namespace CodeBase.Services.MagnetizationObject_2._0.Snap
                     {
                         Vector3 cursorWorldPos = _inputHandler.GetMouseWorldPos();
                         float distanceToTarget = Vector3.Distance(cursorWorldPos, _currentTarget.transform.position);
-                        
+
                         if (distanceToTarget > _snapHandler.GetUnsnapThreshold())
                         {
                             _snapHandler.Unsnap();
@@ -72,7 +72,6 @@ namespace CodeBase.Services.MagnetizationObject_2._0.Snap
                         {
                             _inputHandler.MoveObject();
                             _snapHandler.HandleSnap();
-                            
                         }
                     }
                 }
@@ -103,8 +102,7 @@ namespace CodeBase.Services.MagnetizationObject_2._0.Snap
         private void OnMouseDown() => _inputHandler.OnMouseDown();
         private void OnMouseUp() => _inputHandler.OnMouseUp();
 
-        private void RaiseUnsnapEvent(Collider collider, bool wasSuccessful) =>
-            OnUnsnap?.Invoke(collider, wasSuccessful);
+        private void RaiseUnsnapEvent(Collider collider, bool wasSuccessful) => OnUnsnap?.Invoke(collider, wasSuccessful);
 
         private void RaiseSnapEvent(Collider collider) => OnSnap?.Invoke(collider);
     }
@@ -150,6 +148,7 @@ namespace CodeBase.Services.MagnetizationObject_2._0.Snap
 
             if (isOverlap)
             {
+                direction.y = 0f; 
                 _transform.position += direction * distance;
             }
         }

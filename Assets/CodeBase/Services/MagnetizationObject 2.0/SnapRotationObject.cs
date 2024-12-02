@@ -59,7 +59,7 @@ namespace CodeBase.Services.MagnetizationObject_2._0
             if (!isRotatorActive)
             {
                 ApplyNativeRotation();
-                OnChangeNativeRotation?.Invoke(GetComponent<BoxCollider>());
+                OnChangeNativeRotation?.Invoke(GetComponent<MeshCollider>());
             }
             else
             {
@@ -67,7 +67,6 @@ namespace CodeBase.Services.MagnetizationObject_2._0
                 OnChangeNativeQuaternionRotation?.Invoke(rotation);
             }
         }
-
 
         private void ApplyTargetObjectRotation(Quaternion targetRotation)
         {
@@ -130,12 +129,12 @@ namespace CodeBase.Services.MagnetizationObject_2._0
 
             foreach (var myAxis in myAxesAfterFirstRotation)
             {
-                if (myAxis == myClosestAxis || myAxis == -myClosestAxis) continue; 
+                if (myAxis == myClosestAxis || myAxis == -myClosestAxis) continue;
 
                 foreach (var targetAxis in targetAxes)
                 {
                     if (targetAxis == targetClosestAxis || targetAxis == -targetClosestAxis)
-                        continue; 
+                        continue;
 
                     float angle = Vector3.Angle(myAxis, targetAxis);
                     if (angle < smallestAngle)

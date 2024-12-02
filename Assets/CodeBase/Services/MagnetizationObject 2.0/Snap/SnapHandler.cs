@@ -20,7 +20,7 @@ namespace CodeBase.Services.MagnetizationObject_2._0.Snap
 
         private bool _isCornerSnapped;
         private float _cornerSnapThreshold = 0.1f;
-        private float _cornerUnsnapThreshold = 0.1f;
+        private float _cornerUnsnapThreshold = 0.1f; 
 
         public SnapHandler(Transform transform, Collider myCollider, RelativeRotator rotator, float snapDistance)
         {
@@ -39,79 +39,91 @@ namespace CodeBase.Services.MagnetizationObject_2._0.Snap
         {
             if (_currentTarget != null && _myCollider != null)
             {
-                Vector3 myClosestPoint = _myCollider.ClosestPoint(_currentTarget.transform.position);
-                Vector3 targetClosestPoint = _currentTarget.ClosestPoint(myClosestPoint);
-                Vector3 offset = targetClosestPoint - myClosestPoint;
+                Vector3[] myCorners = GetColliderCorners(_myCollider);
+                Vector3[] targetCorners = GetColliderCorners(_currentTarget);
 
-                float snapThreshold = _snapDistance;
-                float unsnapThreshold = _snapDistance * F;
+                if (myCorners == null || targetCorners == null) return;
 
-                BoxCollider myBoxCollider = _myCollider as BoxCollider;
-                BoxCollider targetBoxCollider = _currentTarget as BoxCollider;
+                float minDistance = float.MaxValue;
+                Vector3 myClosestCorner = Vector3.zero;
+                Vector3 targetClosestCorner = Vector3.zero;
 
-                if (myBoxCollider != null && targetBoxCollider != null)
+                foreach (var myCorner in myCorners)
                 {
-                    Vector3[] myCorners = GetColliderCorners(myBoxCollider);
-                    Vector3[] targetCorners = GetColliderCorners(targetBoxCollider);
-
-                    float minDistance = float.MaxValue;
-                    Vector3 myClosestCorner = Vector3.zero;
-                    Vector3 targetClosestCorner = Vector3.zero;
-
-                    foreach (var myCorner in myCorners)
+                    foreach (var targetCorner in targetCorners)
                     {
-                        foreach (var targetCorner in targetCorners)
+                        float distance = Vector3.Distance(myCorner, targetCorner);
+                        if (distance < minDistance)
                         {
-                            float distance = Vector3.Distance(myCorner, targetCorner);
-                            if (distance < minDistance)
-                            {
-                                minDistance = distance;
-                                myClosestCorner = myCorner;
-                                targetClosestCorner = targetCorner;
-                            }
+                            minDistance = distance;
+                            myClosestCorner = myCorner;
+                            targetClosestCorner = targetCorner;
                         }
-                    }
-
-                    if (minDistance < _cornerSnapThreshold)
-                    {
-                        Vector3 cornerOffset = targetClosestCorner - myClosestCorner;
-                        _transform.position += cornerOffset;
-
-                        if (!_isCornerSnapped)
-                        {
-                            //Debug.Log("Привязка к углу");
-                            OnSnap?.Invoke(_currentTarget);
-                            SetSnapStatus(true);
-                            _isCornerSnapped = true;
-                            _previousTarget = _currentTarget;
-                        }
-                        return;
-                    }
-                    else if (_isCornerSnapped && minDistance > _cornerUnsnapThreshold)
-                    {
-                        //Debug.Log("Отвязка от угла, но остаемся привязанными к объекту");
-                        _isCornerSnapped = false;
                     }
                 }
 
-                if (offset.magnitude < snapThreshold && !_isCornerSnapped)
+                if (minDistance < _cornerSnapThreshold)
                 {
-                  //  _transform.position += offset;
+                    Vector3 cornerOffset = targetClosestCorner - myClosestCorner;
+                    cornerOffset.y = 0f;
+                    _transform.position += cornerOffset;
 
-                    if (_previousTarget != _currentTarget ||
-                        (_previousTarget == _currentTarget && offset.magnitude < _snapDistance))
+                    if (!_isCornerSnapped)
                     {
-                        _transform.position += offset;
-                        
-                      //  Debug.Log("Привязка вдоль объекта");
+                       // Debug.Log("Привязка к углу");
                         OnSnap?.Invoke(_currentTarget);
                         SetSnapStatus(true);
+                        _isCornerSnapped = true;
                         _previousTarget = _currentTarget;
                     }
+
+                    return;
                 }
-                else if (offset.magnitude > unsnapThreshold)
+                else if (_isCornerSnapped && minDistance > _cornerUnsnapThreshold)
                 {
-                    Unsnap();
+                    //Debug.Log("Отвязка от угла");
+                    _isCornerSnapped = false;
+                }
+
+                if (!_isCornerSnapped)
+                {
+                    Vector3 myClosestPoint = _myCollider.ClosestPoint(_currentTarget.transform.position);
+                    Vector3 targetClosestPoint = _currentTarget.ClosestPoint(myClosestPoint);
+                    Vector3 offset = targetClosestPoint - myClosestPoint;
+
+                    offset.y = 0f;
+
+                    float snapThreshold = _snapDistance;
+                    float unsnapThreshold = _snapDistance * F;
+
+                    if (offset.magnitude < snapThreshold)
+                    {
+                        bool isOverlap = Physics.ComputePenetration(
+                            _myCollider, _transform.position + offset, _transform.rotation,
+                            _currentTarget, _currentTarget.transform.position, _currentTarget.transform.rotation,
+                            out Vector3 separationDirection, out float separationDistance);
+
+                        if (isOverlap)
+                        {
+                            separationDirection.y = 0f;
+                            offset += separationDirection * separationDistance;
+                        }
+
+                        _transform.position += offset;
+
+                        if (_previousTarget != _currentTarget ||
+                            (_previousTarget == _currentTarget && offset.magnitude < snapThreshold))
+                        {
+                            //   Debug.Log("Движение вдоль объекта с устранением пересечения");
+                            OnSnap?.Invoke(_currentTarget);
+                            SetSnapStatus(true);
+                            _previousTarget = _currentTarget;
+                        }
+                    }
+                    else if (offset.magnitude > unsnapThreshold)
+                    {
+                        Unsnap();
+                    }
                 }
             }
             else if (_previousTarget != null)
@@ -124,7 +136,7 @@ namespace CodeBase.Services.MagnetizationObject_2._0.Snap
         {
             if (_previousTarget != null)
             {
-                //Debug.Log("Отвязка от объекта");
+                //Debug.Log("Отсоединение от объекта");
                 OnUnsnap?.Invoke(_previousTarget, _rotator.IsRotatorActive);
                 SetSnapStatus(false);
                 _previousTarget = null;
@@ -133,32 +145,44 @@ namespace CodeBase.Services.MagnetizationObject_2._0.Snap
 
         public float GetUnsnapThreshold()
         {
-            return _snapDistance * F; 
+            return _snapDistance * F;
         }
 
         public void SetSnapStatus(bool isSnapped) => OnSnapStatus?.Invoke(isSnapped);
 
-        private Vector3[] GetColliderCorners(BoxCollider boxCollider)
+        private Vector3[] GetColliderCorners(Collider collider)
         {
             Vector3[] corners = new Vector3[8];
 
-            Transform t = boxCollider.transform;
-            Vector3 center = boxCollider.center;
-            Vector3 size = boxCollider.size * 0.5f;
+            MeshCollider meshCollider = collider as MeshCollider;
+            BoxCollider boxCollider = collider as BoxCollider;
 
-            Vector3[] localCorners = new Vector3[8];
-            localCorners[0] = center + new Vector3(-size.x, -size.y, -size.z);
-            localCorners[1] = center + new Vector3(size.x, -size.y, -size.z);
-            localCorners[2] = center + new Vector3(size.x, -size.y, size.z);
-            localCorners[3] = center + new Vector3(-size.x, -size.y, size.z);
-            localCorners[4] = center + new Vector3(-size.x, size.y, -size.z);
-            localCorners[5] = center + new Vector3(size.x, size.y, -size.z);
-            localCorners[6] = center + new Vector3(size.x, size.y, size.z);
-            localCorners[7] = center + new Vector3(-size.x, size.y, size.z);
-
-            for (int i = 0; i < 8; i++)
+            if (meshCollider != null)
             {
-                corners[i] = t.TransformPoint(localCorners[i]);
+                Mesh mesh = meshCollider.sharedMesh;
+                if (mesh == null)
+                {
+                    return null;
+                }
+
+                Bounds meshBounds = mesh.bounds;
+                Vector3 center = meshBounds.center;
+                Vector3 extents = meshBounds.extents;
+
+                Vector3[] localCorners = new Vector3[8];
+                localCorners[0] = center + new Vector3(-extents.x, -extents.y, -extents.z);
+                localCorners[1] = center + new Vector3(extents.x, -extents.y, -extents.z);
+                localCorners[2] = center + new Vector3(extents.x, -extents.y, extents.z);
+                localCorners[3] = center + new Vector3(-extents.x, -extents.y, extents.z);
+                localCorners[4] = center + new Vector3(-extents.x, extents.y, -extents.z);
+                localCorners[5] = center + new Vector3(extents.x, extents.y, -extents.z);
+                localCorners[6] = center + new Vector3(extents.x, extents.y, extents.z);
+                localCorners[7] = center + new Vector3(-extents.x, extents.y, extents.z);
+
+                for (int i = 0; i < 8; i++)
+                {
+                    corners[i] = collider.transform.TransformPoint(localCorners[i]);
+                }
             }
 
             return corners;
