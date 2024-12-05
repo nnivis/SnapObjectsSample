@@ -14,7 +14,7 @@ namespace CodeBase.Services.LightCalibration
             _lightCalibration = new LightCalibrationComponent();
             _emissiveCalibration = new EmissiveCalibrationComponent();
 
-            CalibrateModel(); // // delete this
+            CalibrateModel(); // delete this
         }
 
         public void CalibrateModel() // CalibrateModel(GameObject prefabExample)

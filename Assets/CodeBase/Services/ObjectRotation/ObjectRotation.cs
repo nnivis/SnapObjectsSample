@@ -1,5 +1,6 @@
 using System;
 using CodeBase.Services.MagnetizationObject_2._0;
+using CodeBase.Services.MagnetizationObject_2._0.Snap;
 using UnityEngine;
 
 namespace CodeBase.Services.ObjectRotation
@@ -7,10 +8,11 @@ namespace CodeBase.Services.ObjectRotation
     public class ObjectRotation : MonoBehaviour
     {
         public event Action<Quaternion> OnChangeNativeRotation;
-
+        
+        private const float RotationSpeed = 170.0f;
+        
         private SnapRotationObject _snapRotationObject;
         private Transform _objectTransform;
-        private const float RotationSpeed = 170.0f;
         private Quaternion _targetRotation;
         private bool _useHoldLogic;
 
@@ -31,7 +33,6 @@ namespace CodeBase.Services.ObjectRotation
             {
                 _snapRotationObject.OnChangeNativeRotation += ApplyTargetObjectRotation;
                 _snapRotationObject.OnChangeNativeQuaternionRotation += ApplyTargetObjectQuaternionRotation;
-                
             }
         }
 
@@ -82,19 +83,6 @@ namespace CodeBase.Services.ObjectRotation
         private void ApplyTargetObjectQuaternionRotation(Quaternion quaternion) => _targetRotation = quaternion;
 
         private void NotifyNativeRotationChanged() => OnChangeNativeRotation?.Invoke(_targetRotation);
-
-
-        #region Commit
-
-        //private void Update() =>
-
-        //  _objectTransform.localRotation = _targetRotation;
-
-        //public void ApplyRotateLeft() => _objectTransform.localRotation *= Quaternion.Euler(0, -45, 0);
-
-
-        // public void ApplyRotateRight() => _objectTransform.localRotation *= Quaternion.Euler(0, 45, 0);
-
-        #endregion
+        
     }
 }

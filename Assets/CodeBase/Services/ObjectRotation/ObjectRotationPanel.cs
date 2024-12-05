@@ -8,6 +8,7 @@ namespace CodeBase.Services.ObjectRotation
     {
         public event Action OnClickedLeftButton;
         public event Action OnClickedRightButton;
+        
         [SerializeField] private Button leftButton;
         [SerializeField] private Button rightButton;
 

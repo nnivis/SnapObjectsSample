@@ -1,8 +1,7 @@
 ﻿using System;
-using CodeBase.Services.MagnetizationObject_2._0.Snap;
 using UnityEngine;
 
-namespace CodeBase.Services.MagnetizationObject_2._0
+namespace CodeBase.Services.MagnetizationObject_2._0.Snap
 {
     [RequireComponent(typeof(SnapObject))]
     public class SnapRotationObject : MonoBehaviour

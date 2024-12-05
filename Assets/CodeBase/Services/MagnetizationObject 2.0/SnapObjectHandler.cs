@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using CodeBase.Services.MagnetizationObject_2._0.Rotator;
 using CodeBase.Services.MagnetizationObject_2._0.Snap;
 using UnityEngine;
 

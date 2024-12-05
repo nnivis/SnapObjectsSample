@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace CodeBase.Services.MagnetizationObject_2._0
+namespace CodeBase.Services.MagnetizationObject_2._0.Rotator
 {
     public class RelativeRotator : MonoBehaviour
     {

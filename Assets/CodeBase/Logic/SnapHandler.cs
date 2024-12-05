@@ -1,9 +1,10 @@
 ﻿using System;
+using CodeBase.Services.MagnetizationObject_2._0.Rotator;
 using UnityEngine;
 
 namespace CodeBase.Services.MagnetizationObject_2._0.Snap
 {
-    public class SnapHandler
+    public class SnapObjectHandler
     {
         public event Action<bool> OnSnapStatus;
         public event Action<Collider> OnSnap;
@@ -23,7 +24,7 @@ namespace CodeBase.Services.MagnetizationObject_2._0.Snap
         private float _cornerSnapThreshold = 0.1f;
         private float _cornerUnsnapThreshold = 0.1f; 
 
-        public SnapHandler(Transform transform, Collider myCollider, RelativeRotator rotator, float snapDistance)
+        public SnapObjectHandler(Transform transform, Collider myCollider, RelativeRotator rotator, float snapDistance)
         {
             _transform = transform;
             _myCollider = myCollider;

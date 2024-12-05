@@ -1,4 +1,5 @@
 using CodeBase.Services.MagnetizationObject_2._0;
+using CodeBase.Services.MagnetizationObject_2._0.Rotator;
 using CodeBase.Services.MagnetizationObject_2._0.Snap;
 using UnityEngine;
 
@@ -12,7 +13,6 @@ namespace CodeBase.Services.ObjectRotation
 
         private bool _useHoldLogic;
         private ObjectRotation _activeObject;
-        private ObjectRotationMediator _objectRotationMediator;
         private SnapObject _currentSnapObject;
         private SnapRotationObject _currentSnapRotationObject;
 

@@ -22,11 +22,8 @@ namespace CodeBase.Services.ObjectRotation
         }
 
         public void StartHoldingLeft() => _isHoldingLeft = true;
-
         public void StopHoldingLeft() => _isHoldingLeft = false;
-
         public void StartHoldingRight() => _isHoldingRight = true;
-
         public void StopHoldingRight() => _isHoldingRight = false;
     }
 }

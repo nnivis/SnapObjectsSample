@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace CodeBase.Services.MagnetizationObject_2._0
+namespace CodeBase.Services.MagnetizationObject_2._0.Rotator
 {
     public class RelativeRotatorView : MonoBehaviour
     {
