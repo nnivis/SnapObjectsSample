@@ -5,16 +5,17 @@ namespace CodeBase.Services.MagnetizationObject_2._0.Snap
 {
     public class SnapHandler
     {
-        private const float F = 1.5f;
-
         public event Action<bool> OnSnapStatus;
         public event Action<Collider> OnSnap;
         public event Action<Collider, bool> OnUnsnap;
 
+        private const float F = 1.5f;
+        
         private readonly Transform _transform;
         private readonly Collider _myCollider;
         private readonly RelativeRotator _rotator;
         private readonly float _snapDistance;
+        
         private Collider _currentTarget;
         private Collider _previousTarget;
 
@@ -30,10 +31,7 @@ namespace CodeBase.Services.MagnetizationObject_2._0.Snap
             _snapDistance = snapDistance;
         }
 
-        public void UpdateCurrentTarget(Collider currentTarget)
-        {
-            _currentTarget = currentTarget;
-        }
+        public void UpdateCurrentTarget(Collider currentTarget) => _currentTarget = currentTarget;
 
         public void HandleSnap()
         {
@@ -143,10 +141,7 @@ namespace CodeBase.Services.MagnetizationObject_2._0.Snap
             }
         }
 
-        public float GetUnsnapThreshold()
-        {
-            return _snapDistance * F;
-        }
+        public float GetUnsnapThreshold() => _snapDistance * F;
 
         public void SetSnapStatus(bool isSnapped) => OnSnapStatus?.Invoke(isSnapped);
 
@@ -155,7 +150,6 @@ namespace CodeBase.Services.MagnetizationObject_2._0.Snap
             Vector3[] corners = new Vector3[8];
 
             MeshCollider meshCollider = collider as MeshCollider;
-            BoxCollider boxCollider = collider as BoxCollider;
 
             if (meshCollider != null)
             {
