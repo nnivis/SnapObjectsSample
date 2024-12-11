@@ -10,7 +10,7 @@ namespace CodeBase.UI.OrientationImageChecker
 
         private void Start() => _rectTransform = GetComponent<RectTransform>();
 
-        private void FixedUpdate()
+        private void LateUpdate()
         {
             Vector3 acceleration = Input.acceleration;
             float zAngle = Mathf.Atan2(acceleration.x, -acceleration.y) * Mathf.Rad2Deg;

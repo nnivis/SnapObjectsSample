@@ -5,9 +5,9 @@ namespace CodeBase.UI.OrientationImageChecker
 {
     public class AccelerationRotationForList : MonoBehaviour
     {
-        [SerializeField] private List<RectTransform> _rectTransforms;
+        [SerializeField] private List<RectTransform> rectTransforms;
 
-        private void FixedUpdate()
+        private void LateUpdate()
         {
             Vector3 acceleration = Input.acceleration;
             float zAngle = Mathf.Atan2(acceleration.x, -acceleration.y) * Mathf.Rad2Deg;
@@ -20,7 +20,7 @@ namespace CodeBase.UI.OrientationImageChecker
 
             float snappedRotation = SnapToNearest90Degree(zAngle);
 
-            foreach (var rectTransform in _rectTransforms)
+            foreach (RectTransform rectTransform in rectTransforms)
             {
                 if (rectTransform != null)
                 {
@@ -31,7 +31,7 @@ namespace CodeBase.UI.OrientationImageChecker
 
         private float SnapToNearest90Degree(float angle)
         {
-            float[] possibleAngles = {0, 90, 180, 270};
+            float[] possibleAngles = {0, 90, 0, 270};
             float closest = possibleAngles[0];
             float minDifference = Mathf.Abs(angle - closest);
 
